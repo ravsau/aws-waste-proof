@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read-only AWS waste scan with a before/after check. Standard library only.
 
+  waste.py demo                                   made-up data, no AWS account
   waste.py scan --region us-east-1 --out before.json
   waste.py compare before.json after.json
 """
@@ -208,8 +209,19 @@ def main(argv=None):
     c = sub.add_parser("compare", help="compare two saved scans")
     c.add_argument("before")
     c.add_argument("after")
+    sub.add_parser("demo", help="before/after on made-up data, no AWS account needed")
     args = parser.parse_args(argv)
     try:
+        if args.command == "demo":
+            here = os.path.dirname(os.path.abspath(__file__))
+            now = dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc)
+            reports = []
+            for name in ("demo-before.json", "demo-after.json"):
+                with open(os.path.join(here, name)) as fh:
+                    data = json.load(fh)
+                reports.append(scan(["us-east-1"], run=lambda s, op, r, extra=(), d=data: d[op], now=now))
+            print(render_compare(compare(*reports)))
+            return 0
         if args.command == "scan":
             report = scan(args.region, args.snapshot_days)
             with open(args.out, "w") as fh:

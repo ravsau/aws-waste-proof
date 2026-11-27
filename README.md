@@ -1,56 +1,44 @@
 # aws-waste-proof
 
-**Find unused AWS resources. Clean them up. Prove they are gone.**
+Find unused AWS resources, clean them up, then check they are gone. One Python file, read-only.
 
-One read-only Python script. Scan, clean up, scan again, and see what changed:
+## Try it (no AWS account needed)
+
+```bash
+git clone https://github.com/ravsau/aws-waste-proof && python3 aws-waste-proof/waste.py demo
+```
 
 ```text
 4 resolved, 2 still open, 1 new, 0 unknown
-
-Resolved
-  unattached-volume        vol-loose         500 GiB gp3 volume in state 'available'
-  idle-elastic-ip          eipalloc-idle     Elastic IP with no association
-Still open
-  old-snapshot             snap-old          started 2023-03-01
-New
-  unattached-volume        vol-new           20 GiB gp3 volume in state 'available'
 ```
 
-## Try it in 10 seconds (no AWS account)
+followed by a table of each resource. The demo uses made-up data.
+
+## Use it on your account
+
+Needs Python 3.9+ and the AWS CLI, already logged in.
 
 ```bash
-git clone https://github.com/ravsau/aws-waste-proof && python3 aws-waste-proof/examples/demo.py
+python3 waste.py scan --region us-east-1 --out before.json     # 1. see the waste
+# 2. delete what you choose to delete
+python3 waste.py scan --region us-east-1 --out after.json      # 3. scan again
+python3 waste.py compare before.json after.json                # 4. see what is gone
 ```
 
-The demo uses made-up data. The output above is shortened.
+## What it looks for
 
-## Run it on your account
+- EBS volumes attached to nothing
+- gp2 volumes (gp3 is usually cheaper)
+- Elastic IPs attached to nothing
+- Stopped instances that still hold storage
+- Snapshots older than a year
+- Log groups that never delete logs
 
-You need Python 3.9 or later and a configured AWS CLI.
+## Safe to run
 
-```bash
-cd aws-waste-proof/skills/aws-waste-proof
-python3 scripts/waste.py scan --region us-east-1 --out before.json
-# clean up what you decide to clean up
-python3 scripts/waste.py scan --region us-east-1 --out after.json
-python3 scripts/waste.py compare before.json after.json
-```
+`waste.py` only reads. It cannot create, change or delete anything in your account.
+`before.json` and `after.json` contain your account ID, so do not share them.
 
-Or use it as a Claude Code skill: `/plugin marketplace add ravsau/aws-waste-proof`, then
-`/plugin install aws-waste-proof@aws-waste-proof`, then ask `Find AWS waste in us-east-1`.
+Version 0.1 is tested on made-up data only. Found a wrong result? Open an issue.
 
-## What it finds
-
-Unattached EBS volumes, gp2 volumes, idle Elastic IPs, stopped instances that still hold storage,
-snapshots older than a year, and log groups that keep data forever.
-
-## Good to know
-
-- The script makes only `describe` calls and changes nothing. A test checks this.
-- "Resolved" means the resource is no longer reported. Confirm the savings in Cost Explorer.
-- The saved JSON files hold your account ID and resource IDs, so keep them private.
-- Version 0.1 is tested on made-up data only. Please open an issue for a wrong finding.
-
-Want scheduled scans without running a script? [Open this pre-filled issue](https://github.com/ravsau/aws-waste-proof/issues/new?title=I+want+a+hosted+version).
-
-MIT License
+Want this on a schedule, with no script to run? [Tell me here](https://github.com/ravsau/aws-waste-proof/issues/new?title=I+want+a+hosted+version).

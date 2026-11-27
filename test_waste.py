@@ -4,15 +4,15 @@ import pathlib
 import sys
 import unittest
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "skills/aws-waste-proof/scripts"))
+ROOT = pathlib.Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
 import waste  # noqa: E402
 
 NOW = dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc)
 
 
 def load(name):
-    return json.loads((ROOT / "examples" / name).read_text())
+    return json.loads((ROOT / name.replace("aws-", "demo-")).read_text())
 
 
 def runner(responses, fail=()):

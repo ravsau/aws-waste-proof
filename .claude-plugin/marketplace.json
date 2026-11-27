@@ -1,7 +1,0 @@
-{
-  "name": "aws-waste-proof",
-  "owner": {"name": "ravsau"},
-  "plugins": [
-    {"name": "aws-waste-proof", "source": "./", "description": "Read-only AWS waste scan with a before/after check."}
-  ]
-}
