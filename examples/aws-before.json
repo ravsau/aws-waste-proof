@@ -1,0 +1,24 @@
+{
+  "get-caller-identity": {"Account": "111111111111"},
+  "describe-volumes": {"Volumes": [
+    {"VolumeId": "vol-loose", "Size": 500, "VolumeType": "gp3", "State": "available"},
+    {"VolumeId": "vol-gp2", "Size": 100, "VolumeType": "gp2", "State": "in-use"},
+    {"VolumeId": "vol-ok", "Size": 50, "VolumeType": "gp3", "State": "in-use"}
+  ]},
+  "describe-addresses": {"Addresses": [
+    {"AllocationId": "eipalloc-idle", "PublicIp": "203.0.113.10"},
+    {"AllocationId": "eipalloc-used", "PublicIp": "203.0.113.11", "AssociationId": "eipassoc-1"}
+  ]},
+  "describe-instances": {"Reservations": [{"Instances": [
+    {"InstanceId": "i-stopped", "State": {"Name": "stopped"}, "BlockDeviceMappings": [{"Ebs": {"VolumeId": "vol-root"}}]},
+    {"InstanceId": "i-running", "State": {"Name": "running"}, "BlockDeviceMappings": [{"Ebs": {"VolumeId": "vol-ok"}}]}
+  ]}]},
+  "describe-snapshots": {"Snapshots": [
+    {"SnapshotId": "snap-old", "StartTime": "2023-03-01T00:00:00.000Z", "VolumeSize": 200},
+    {"SnapshotId": "snap-recent", "StartTime": "2025-12-01T00:00:00.000Z", "VolumeSize": 200}
+  ]},
+  "describe-log-groups": {"logGroups": [
+    {"logGroupName": "/aws/lambda/demo", "storedBytes": 5368709120},
+    {"logGroupName": "/aws/lambda/tidy", "storedBytes": 1024, "retentionInDays": 14}
+  ]}
+}
